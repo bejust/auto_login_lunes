@@ -241,18 +241,19 @@ def login_then_logout_one_account(email: str, password: str) -> Tuple[str, Optio
 
         # CF: 提交前尽量过盾（有的站提交前就需要点 Turnstile）
         _try_click_captcha(sb, "提交前")  # CF
-
+        
+        screenshot(sb, f"login_ready_01_{int(time.time())}.png")
         sb.click(SUBMIT_SEL)
         sb.wait_for_element_visible("body", timeout=30)
         time.sleep(2)
-
+        screenshot(sb, f"login_02_{int(time.time())}.png")
         # CF: 提交后再试一次（很多站是提交后才弹）
         _try_click_captcha(sb, "提交后")  # CF
 
         # CF: 获取 cf_clearance 判断是否过盾（不是必须，但可用于日志/诊断）
         has_cf = _has_cf_clearance(sb)  # CF
         current_url = (sb.get_current_url() or "").strip()
-
+        screenshot(sb, f"login_03_{int(time.time())}.png")
         # ===== 业务：判定登录成功 =====
         welcome_text = None
         logged_in = False
@@ -267,7 +268,9 @@ def login_then_logout_one_account(email: str, password: str) -> Tuple[str, Optio
             return "FAIL", welcome_text, has_cf, current_url, False
 
         # ===== 业务：等待 3-5 秒，退出登录 =====
+        screenshot(sb, f"loginSucc_04_{int(time.time())}.png")
         logout_ok = _logout_after_delay(sb)
+        screenshot(sb, f"logout_05_{int(time.time())}.png")
 
         # 更新一下当前 URL
         try:
